@@ -1,0 +1,90 @@
+%YAML 1.2
+---
+# See http://www.sublimetext.com/docs/3/syntax.html
+name: faust
+file_extensions:
+  - dsp
+  - lib
+scope: source.faust
+
+contexts:
+  # The prototype context is prepended to all contexts but those setting
+  # meta_include_prototype: false.
+  prototype:
+    - include: comments
+
+  main:
+    # The main context is the initial starting point of our syntax.
+    # Include other contexts from here (or specify them directly).
+    - include: keywords
+    - include: numbers
+    - include: strings
+    - include: operators
+    - include: imports
+    - include: variables
+    - include: constants
+    - include: primitives
+    - include: gui
+
+
+  keywords:
+    # Note that blackslashes don't need to be escaped within single quoted
+    # strings in YAML. When using single quoted strings, only single quotes
+    # need to be escaped: this is done by using two single quotes next to each
+    # other.
+    - match: '\b(float|int)\b'
+      scope: keyword.control.faust
+
+  primitives:
+    - match: '\b(mem|prefix|int|float|rdtable|rwtable|select2|select3|ffunction|fconstant|fvariable|acos|asin|atan|atan2|cos|sin|tan|exp|log|log10|pow|sqrt|abs|fabsf|min|max|fmod|remainder|floor|ceil|rint)\b'
+      scope: variable.language.faust
+
+  gui:
+    - match: '\b(button|checkbox|vslider|hslider|nentry|vgroup|hgroup|tgroup|vbargraph|hbargraph|attach)\b'
+      scope: variable.language.faust
+
+  imports:
+    - match: '\b(import|declare|library|component|environment)\b'
+      scope: keyword.import.faust
+
+  variables:
+    - match: '\b(process)\b'
+      scope: keyword.language.faust
+
+  constants:
+    - match: '\b[A-Z_]*\b'
+      scope: constant.language.faust
+
+  operators:
+    - match: '\b(with|letrec|case|seq|par|sum|prod|~|:|!|%|&|\*|\-|\+|==|=|!=|!=|<=|<!|>=|<|>|!|&&|\|\|)\b'
+      scope: keyword.operator.faust
+
+  numbers:
+    - match: '\b(-)?[0-9.]+\b'
+      scope: constant.numeric.faust
+
+  strings:
+    # Strings begin and end with quotes, and use backslashes as an escape
+    # character.
+    - match: '"'
+      scope: punctuation.definition.string.begin.faust
+      push: inside_string
+
+  inside_string:
+    - meta_include_prototype: false
+    - meta_scope: string.quoted.double.faust
+    - match: '\.'
+      scope: constant.character.escape.faust
+    - match: '"'
+      scope: punctuation.definition.string.end.faust
+      pop: true
+
+  comments:
+    # Comments begin with a '//' and finish at the end of the line.
+    - match: '//'
+      scope: punctuation.definition.comment.faust
+      push:
+        # This is an anonymous context push for brevity.
+        - meta_scope: comment.line.double-slash.faust
+        - match: $\n?
+          pop: true
